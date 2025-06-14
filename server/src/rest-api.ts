@@ -200,6 +200,13 @@ app.post("/api/secret/:id/unlock", async (req, res) => {
                 // A later request (or a cron cleanup) can delete rows with 0 views.
             }
 
+            // Reset OTP verification so that every subsequent access requires a fresh code
+            if (record.email) {
+                await trx("shared_secrets")
+                    .where({ id })
+                    .update({ otp_verified: false, otp_hash: null, otp_expires_at: null, updated_at: trx.fn.now() });
+            }
+
             return { status: 200, secret: plaintext } as const;
         });
 

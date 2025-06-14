@@ -31,6 +31,9 @@ function SharePage() {
                         setPasswordVerified(true);
                         setNeedsPassword(false);
                     }
+                    if (opts?.twoFACode) {
+                        setError("Incorrect verification code. Please try again.");
+                    }
                 } else {
                     if (opts?.password) {
                         setError("Incorrect password. Please try again.");
@@ -64,9 +67,17 @@ function SharePage() {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (needs2FA) {
-            attemptUnlock({ password, twoFACode: code });
+            const payload: { password?: string; twoFACode: string } = { twoFACode: code };
+            if (password.trim()) {
+                payload.password = password.trim();
+            }
+            attemptUnlock(payload);
         } else {
-            attemptUnlock({ password });
+            const payload: { password?: string } = {};
+            if (password.trim()) {
+                payload.password = password.trim();
+            }
+            attemptUnlock(payload);
         }
     };
 
