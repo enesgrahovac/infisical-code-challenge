@@ -58,7 +58,7 @@ function SharePage() {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (needs2FA) {
-            attemptUnlock({ twoFACode: code });
+            attemptUnlock({ password, twoFACode: code });
         } else {
             attemptUnlock({ password });
         }
