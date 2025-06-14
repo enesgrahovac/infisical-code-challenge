@@ -7,6 +7,7 @@ function SharePage() {
     const [password, setPassword] = useState("");
     const [needsPassword, setNeedsPassword] = useState(false);
     const [needs2FA, setNeeds2FA] = useState(false);
+    const [passwordVerified, setPasswordVerified] = useState(false);
     const [code, setCode] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -24,6 +25,10 @@ function SharePage() {
                 const data = await r.json().catch(() => null);
                 if (data && data.require2FA) {
                     setNeeds2FA(true);
+                    if (opts && opts.password) {
+                        setPasswordVerified(true);
+                        setNeedsPassword(false);
+                    }
                 } else {
                     setNeedsPassword(true);
                 }
@@ -61,7 +66,7 @@ function SharePage() {
 
     return (
         <div className="min-h-screen flex flex-col items-center pt-20 bg-gray-100 px-4">
-            <h1 className="text-3xl font-semibold mb-6">SneakyLink</h1>
+            <h1 className="text-3xl font-semibold mb-6">🔗 SneakyLink</h1>
 
             {loading && <p>Loading…</p>}
 
@@ -71,7 +76,7 @@ function SharePage() {
                 </div>
             )}
 
-            {!secret && needsPassword && (
+            {!secret && needsPassword && !passwordVerified && (
                 <form onSubmit={handleSubmit} className="space-y-4 w-full max-w-sm">
                     <p className="text-gray-700">This secret is password-protected.</p>
                     <input
@@ -92,7 +97,10 @@ function SharePage() {
             )}
 
             {!secret && needs2FA && (
-                <form onSubmit={handleSubmit} className="space-y-4 w-full max-w-sm">
+                <form onSubmit={handleSubmit} className="space-y-4 w-full max-w-sm mt-10">
+                    {passwordVerified && (
+                        <p className="text-green-600 font-medium">Password verified ✅</p>
+                    )}
                     <p className="text-gray-700">A verification code was sent to the owner's email. Enter it below.</p>
                     <input
                         type="text"
