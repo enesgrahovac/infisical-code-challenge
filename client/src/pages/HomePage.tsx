@@ -9,6 +9,7 @@ function HomePage() {
     const [link, setLink] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [emailError, setEmailError] = useState<string | null>(null);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -35,6 +36,8 @@ function HomePage() {
             setSecret("");
             setPassword("");
             setMaxViews("");
+            setEmail("");
+            setEmailError(null);
         } catch (err) {
             const message = err instanceof Error ? err.message : String(err);
             setError(message || "Something went wrong");
@@ -55,6 +58,8 @@ function HomePage() {
                         rows={4}
                         value={secret}
                         onChange={(e) => setSecret(e.target.value)}
+                        onInvalid={(e) => e.currentTarget.setCustomValidity("A secret value is required to create a link")}
+                        onInput={(e) => e.currentTarget.setCustomValidity("")}
                         required
                     />
                 </div>
@@ -103,13 +108,24 @@ function HomePage() {
                         type="email"
                         className="w-full border rounded p-2"
                         value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        onChange={(e) => {
+                            const val = e.target.value;
+                            setEmail(val);
+                            if (val === "") {
+                                setEmailError(null);
+                            } else {
+                                // Basic email regex
+                                const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+                                setEmailError(ok ? null : "Invalid email format");
+                            }
+                        }}
                     />
+                    {emailError && <p className="text-red-600 mt-1 text-sm">{emailError}</p>}
                 </div>
 
                 <button
                     type="submit"
-                    disabled={loading}
+                    disabled={loading || emailError !== null}
                     className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 disabled:opacity-50"
                 >
                     {loading ? "Creating…" : "Generate Link"}
