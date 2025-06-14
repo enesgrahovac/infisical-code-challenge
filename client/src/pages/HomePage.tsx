@@ -48,7 +48,7 @@ function HomePage() {
 
     return (
         <div className="min-h-screen flex flex-col items-center justify-start pt-20 bg-gray-100 px-4">
-            <h1 className="text-3xl font-semibold mb-6">Create a SneakyLink</h1>
+            <h1 className="text-3xl font-semibold mb-6"> 🔗 SneakyLink – Create a Secret Share</h1>
 
             <form className="w-full max-w-xl space-y-4" onSubmit={handleSubmit}>
                 <div>
