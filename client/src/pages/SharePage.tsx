@@ -4,12 +4,14 @@ import { useParams, Link } from "react-router";
 function SharePage() {
     const { id } = useParams();
     const [secret, setSecret] = useState<string | null>(null);
+    const [isSecretVisible, setIsSecretVisible] = useState(false);
+    const [copied, setCopied] = useState(false);
     const [password, setPassword] = useState("");
     const [needsPassword, setNeedsPassword] = useState(false);
     const [needs2FA, setNeeds2FA] = useState(false);
     const [passwordVerified, setPasswordVerified] = useState(false);
     const [code, setCode] = useState("");
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     const attemptUnlock = async (opts?: { password?: string; twoFACode?: string }) => {
@@ -49,11 +51,12 @@ function SharePage() {
         }
     };
 
+    // Reset "Copied!" indicator after 2 seconds
     useEffect(() => {
-        if (!id) return;
-        attemptUnlock();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [id]);
+        if (!copied) return;
+        const t = setTimeout(() => setCopied(false), 500);
+        return () => clearTimeout(t);
+    }, [copied]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -73,6 +76,21 @@ function SharePage() {
             {error && (
                 <div className="bg-red-100 text-red-700 p-4 rounded max-w-xl w-full mb-4">
                     {error}
+                </div>
+            )}
+
+            {!secret && !needsPassword && !needs2FA && !loading && !error && (
+                <div className="flex flex-col items-center space-y-4">
+                    <p className="text-gray-700 text-center max-w-sm">
+                        Your secret is ready to be viewed. For security reasons it will only be
+                        revealed once. Click the button below when you're ready.
+                    </p>
+                    <button
+                        onClick={() => attemptUnlock()}
+                        className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
+                    >
+                        Unlock secret
+                    </button>
                 </div>
             )}
 
@@ -123,14 +141,29 @@ function SharePage() {
             {secret && (
                 <div className="bg-white p-6 rounded shadow max-w-xl w-full">
                     <h2 className="font-medium mb-2">Your secret</h2>
-                    <pre className="whitespace-pre-wrap break-words bg-gray-100 p-4 rounded mb-4">
-                        {secret}
-                    </pre>
+                    <div className="relative">
+                        <pre
+                            className={`whitespace-pre-wrap break-words bg-gray-100 p-4 rounded mb-4 ${!isSecretVisible ? "blur-sm select-none" : ""}`}
+                        >
+                            {secret}
+                        </pre>
+                        <button
+                            type="button"
+                            aria-label={isSecretVisible ? "Hide secret" : "Show secret"}
+                            onClick={() => setIsSecretVisible((v) => !v)}
+                            className="absolute top-1/2 right-2 -translate-y-1/2 text-gray-600 hover:text-gray-800"
+                        >
+                            {isSecretVisible ? "🙈" : "👁"}
+                        </button>
+                    </div>
                     <button
-                        className="bg-gray-200 px-3 py-2 rounded"
-                        onClick={() => navigator.clipboard.writeText(secret)}
+                        className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 w-full"
+                        onClick={() => {
+                            navigator.clipboard.writeText(secret);
+                            setCopied(true);
+                        }}
                     >
-                        Copy to clipboard
+                        {copied ? "Copied!" : "Copy"}
                     </button>
                 </div>
             )}

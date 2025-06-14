@@ -121,8 +121,9 @@ app.post("/api/secret/:id/unlock", async (req, res) => {
                 return { status: 410 } as const; // Gone
             }
 
-            // View limit check
-            if (record.max_views && record.views_remaining <= 0) {
+            // View limit check (handle exhausted or negative counters gracefully)
+            if (record.max_views !== null && record.views_remaining < 1) {
+                // Already exhausted – clean up and signal expiry
                 await trx("shared_secrets").where({ id }).delete();
                 return { status: 410 } as const;
             }
@@ -190,14 +191,13 @@ app.post("/api/secret/:id/unlock", async (req, res) => {
             decipher.setAuthTag(authTag);
             const plaintext = Buffer.concat([decipher.update(ciphertext), decipher.final()]).toString("utf8");
 
-            // Update views_remaining if needed
-            if (record.max_views) {
+            // Update views_remaining if needed – leave the row in place even at 0
+            if (record.max_views !== null) {
                 const remaining = record.views_remaining - 1;
-                if (remaining <= 0) {
-                    await trx("shared_secrets").where({ id }).delete();
-                } else {
-                    await trx("shared_secrets").where({ id }).update({ views_remaining: remaining, updated_at: trx.fn.now() });
-                }
+                await trx("shared_secrets")
+                    .where({ id })
+                    .update({ views_remaining: remaining, updated_at: trx.fn.now() });
+                // A later request (or a cron cleanup) can delete rows with 0 views.
             }
 
             return { status: 200, secret: plaintext } as const;

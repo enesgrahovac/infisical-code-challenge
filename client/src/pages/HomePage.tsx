@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function HomePage() {
     const [secret, setSecret] = useState("");
@@ -10,6 +10,7 @@ function HomePage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [emailError, setEmailError] = useState<string | null>(null);
+    const [copied, setCopied] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -45,6 +46,13 @@ function HomePage() {
             setLoading(false);
         }
     };
+
+    // Reset copied indicator after 2 seconds
+    useEffect(() => {
+        if (!copied) return;
+        const t = setTimeout(() => setCopied(false), 500);
+        return () => clearTimeout(t);
+    }, [copied]);
 
     return (
         <div className="min-h-screen flex flex-col items-center justify-start pt-20 bg-gray-100 px-4">
@@ -144,9 +152,12 @@ function HomePage() {
                         />
                         <button
                             className="bg-gray-200 px-3 py-2 rounded"
-                            onClick={() => navigator.clipboard.writeText(link)}
+                            onClick={() => {
+                                navigator.clipboard.writeText(link);
+                                setCopied(true);
+                            }}
                         >
-                            Copy
+                            {copied ? "Copied!" : "Copy"}
                         </button>
                     </div>
                 </div>
