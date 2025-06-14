@@ -1,0 +1,82 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+
+Secret Sharing
+
+Objective: Develop a feature called "secret sharing, " similar to One Time Secret,
+for securely sharing sensitive credentials.
+Timeframe: You have up to 3 hours from the moment you receive the assignment
+to complete and submit it.
+Background
+In fast-paced development, developers often resort to insecure methods like email
+or Slack to share one-off secrets. To address this, you'll build an end-to-end
+"secret sharing" feature, to allow users to quickly and securely share text-based
+sensitive information with intended recipients.
+Requirements:
+Users can input any text-based content to share.
+Upon submission, a short link for the shared content is generated. For
+example: http://localhost:3000/share/f077e20eb813ba58 .
+Users can specify an expiration duration in days after which the link can no
+longer be opened.
+Users can specify an optional password, requiring recipients to enter it to
+access the content.
+Bonus:
+Users can specify a maximum number of times that the link can be opened by
+a recipient.
+Users can configure optional email-based 2FA before revealing a secret.
+
+Important: No authentication system is needed for this assignment. Anyone
+should be able to create a secret share link.
+
+Task Breakdown
+This assignment is purposefully open-ended because we want to see how you
+approach building a feature from start to finish. If you have ideas for extra tweaks
+or features beyond the requirements, feel free to include them—it’s a chance to
+show off your skills!
+
+Backend
+Create database models and REST API endpoints to manage the creation and
+expiration of shared content, following the listed requirements above. Focus on
+following best practices and doing your best within the allotted time.
+Security: For security, secure the secret shared at rest. You are free to
+implement any additional security measures you deem fit to set your
+submission apart.
+API Design:
+Provide endpoints to create and retrieve shared secrets. Handle edge
+cases gracefully.
+Frontend
+Design an intuitive and user-friendly interface that allows users to input content
+for sharing. This is your chance to showcase your frontend skills by creating an
+elegant UI. The interface should include:
+1. Form for Inputting Content:
+Allow users to input text content and set conditions (expiration & optional
+password).
+2. Generated Short Link Display:
+Display the short link after creating a secret share.
+3. Access View:
+Provide a view for accessing the shared content via the link, provided the
+expiration criteria remain valid.
+If a password is set, prompt the user to enter it before showing the
+content.
+
+Evaluation Criteria
+Security: Secrets must be securely stored. Optional password protection must
+work reliably.
+Functionality: The feature should work as described, with no errors.
+Code Quality: Clean, readable, and well-organized code.
+Design Choices: Intuitive and elegant UI/UX, and backend implementation.
+Deliverables:
+A fully functional "secret sharing" feature, similar to One Time Secret,
+covering backend and frontend requirements and as many of the items in the
+bonus section as possible.
+
+This codebase is described in the readme @README.md
+
+This is for a security app, so please suggest state of the art security solutions when building this feature
+
+Make hard decisions, do the hard work, and think hard about avoiding technical debt. Don't do quick fixes, instead go for the more secure and scalable solutions that avoid technical debt.
+
+Always respond to me with your plan for me to ask questions or approve your plan before you execute on it.
