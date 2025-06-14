@@ -32,6 +32,9 @@ function SharePage() {
                         setNeedsPassword(false);
                     }
                 } else {
+                    if (opts?.password) {
+                        setError("Incorrect password. Please try again.");
+                    }
                     setNeedsPassword(true);
                 }
                 return;
